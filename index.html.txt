@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王慧生日快乐</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Comic Sans MS", "幼圆", "微软雅黑", sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* 第一个画面：密码弹窗 */
+        #screen1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .popup {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            position: relative;
+        }
+        
+        .popup::before {
+            content: "";
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/6134/6134540.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+        }
+        
+        .popup h1 {
+            color: #ff6b9d;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        
+        .popup input {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border: 2px solid #ffb6c1;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            width: 200px;
+            text-align: center;
+        }
+        
+        .popup button {
+            padding: 10px 25px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(to right, #ff6b9d, #ff8fc7);
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .popup button:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 第二个画面：祝福气泡 */
+        #screen2 {
+            display: none;
+            padding: 20px;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .bubble {
+            position: absolute;
+            padding: 15px 20px;
+            border-radius: 20px;
+            background: linear-gradient(45deg, #fff0f5, #ffccee);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            color: #d63384;
+            font-size: 1.1em;
+            max-width: 200px;
+            animation: pop 0.5s ease-out forwards;
+            opacity: 0;
+            z-index: 10;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/1830/1830418.png');
+            background-size: 30px;
+            background-repeat: no-repeat;
+            background-position: right bottom;
+            border: 2px solid #ffb6c1;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* 第三个画面：粒子效果 */
+        #screen3 {
+            display: none;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: #000;
+        }
+        
+        #particleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .birthday-text {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .birthday-text h1 {
+            color: #fff;
+            font-size: 4em;
+            text-shadow: 0 0 20px #ff69b4, 0 0 40px #ff69b4;
+            margin-bottom: 20px;
+        }
+        
+        .birthday-text h2 {
+            color: #fff;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px #ff99cc, 0 0 40px #ff99cc;
+        }
+    </style>
+</head>
+<body>
+    <!-- 第一个画面：密码验证 -->
+    <div id="screen1">
+        <div class="popup">
+            <h1>王慧</h1>
+            <input type="password" id="password" placeholder="请输入密码">
+            <br>
+            <button onclick="checkPassword()">确定</button>
+            <button onclick="clearInput()">取消</button>
+        </div>
+    </div>
+
+    <!-- 第二个画面：祝福气泡 -->
+    <div id="screen2"></div>
+
+    <!-- 第三个画面：粒子效果 -->
+    <div id="screen3">
+        <canvas id="particleCanvas"></canvas>
+        <div class="birthday-text">
+            <h1>王慧</h1>
+            <h2>Happy Birthday</h2>
+        </div>
+    </div>
+
+    <script>
+        // 密码验证
+        function checkPassword() {
+            const password = document.getElementById('password').value;
+            if (password === '1201') {
+                document.getElementById('screen1').style.display = 'none';
+                document.getElementById('screen2').style.display = 'block';
+                createBubbles();
+            } else {
+                alert('密码错误，请重试！');
+                document.getElementById('password').value = '';
+            }
+        }
+        
+        function clearInput() {
+            document.getElementById('password').value = '';
+        }
+        
+        // 生成祝福气泡
+        function createBubbles() {
+            const screen2 = document.getElementById('screen2');
+            const blessings = [
+                "王慧生日快乐！",
+                "天天开心，永远可爱！",
+                "愿你被世界温柔以待～",
+                "生日快乐，不止今天！",
+                "越来越美，心想事成！",
+                "Happy Birthday！",
+                "新的一岁，平安喜乐！",
+                "蛋糕好好吃，愿望都实现！",
+                "少女心永不老！",
+                "生日快乐，我的宝！",
+                "祝你暴富暴美暴可爱！",
+                "每天都有好心情！",
+                "愿你永远保持童心！",
+                "生日嗨皮，万事顺意！",
+                "新的一岁，要更爱自己！",
+                "Hello Kitty陪你过生日！",
+                "愿所有美好都如期而至！",
+                "生日快乐，健康幸福！",
+                "愿你被爱包围，温暖常在！",
+                "新的旅程，更加精彩！",
+                "蛋糕、礼物、祝福都给你！",
+                "今天你是最闪亮的星！",
+                "生日快乐，甜蜜每一天！",
+                "愿你眼里的星星永远闪亮！",
+                "一岁一礼，一寸欢喜！",
+                "生日快乐，未来可期！",
+                "愿你想要的都得到！",
+                "开心最重要，生日快乐！",
+                "新的一岁，闪闪发光！",
+                "王慧，生日快乐！🎂"
+            ];
+            
+            const screenWidth = screen2.clientWidth;
+            const screenHeight = screen2.clientHeight;
+            
+            // 逐个创建气泡
+            blessings.forEach((blessing, index) => {
+                setTimeout(() => {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    bubble.textContent = blessing;
+                    
+                    // 随机位置，避免重叠和超出屏幕
+                    const maxX = screenWidth - 220;
+                    const maxY = screenHeight - 80;
+                    const x = Math.random() * maxX;
+                    const y = Math.random() * maxY;
+                    
+                    bubble.style.left = `${x}px`;
+                    bubble.style.top = `${y}px`;
+                    
+                    screen2.appendChild(bubble);
+                    
+                    // 最后一个气泡创建完成后，3秒跳转到第三个画面
+                    if (index === blessings.length - 1) {
+                        setTimeout(() => {
+                            document.getElementById('screen2').style.display = 'none';
+                            document.getElementById('screen3').style.display = 'flex';
+                            initParticles();
+                        }, 3000);
+                    }
+                }, index * 200); // 每个气泡间隔200ms出现
+            });
+        }
+        
+        // 粒子效果
+        function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 设置canvas尺寸
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // 粒子类
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 3 + 1;
+                    this.speedX = Math.random() * 3 - 1.5;
+                    this.speedY = Math.random() * 3 - 1.5;
+                    this.color = ['#ff69b4', '#ff8fc7', '#ffb6c1', '#ffccee', '#fff0f5'][Math.floor(Math.random() * 5)];
+                }
+                
+                update() {
+                    // 粒子向文字区域聚集
+                    const targetX = canvas.width / 2;
+                    const targetY = canvas.height / 2;
+                    
+                    this.x += (targetX - this.x) * 0.005 + (Math.random() - 0.5) * 0.5;
+                    this.y += (targetY - this.y) * 0.005 + (Math.random() - 0.5) * 0.5;
+                    
+                    // 边界检测
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+                
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // 创建粒子数组
+            const particlesArray = [];
+            const particleCount = Math.floor((canvas.width * canvas.height) / 1500);
+            
+            for (let i = 0; i < particleCount; i++) {
+                particlesArray.push(new Particle());
+            }
+            
+            // 动画循环
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particlesArray.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+            
+            // 窗口大小调整
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+    </script>
+</body>
+</html>
